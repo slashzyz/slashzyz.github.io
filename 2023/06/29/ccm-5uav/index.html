@@ -1,0 +1,769 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ccmslam_5uav介绍本仓库在CCM-SLAM基础上，进行了改进。在原有最多使用四架无人机的基础上，改进为五架无人机地图融合。 改进部分主要在ServerSystem, Viewer, MapMatcher等类内进行了新节点实例化。 环境说明 Ubuntu 20或18 OpenCV 3.2  配置步骤：1. OpenCV安装安装依赖 123sudo apt install -y build-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零配置CCM-SLAM，支持五架无人机+RealSense相机">
+<meta property="og:url" content="http://example.com/2023/06/29/ccm-5uav/index.html">
+<meta property="og:site_name" content="myblog">
+<meta property="og:description" content="ccmslam_5uav介绍本仓库在CCM-SLAM基础上，进行了改进。在原有最多使用四架无人机的基础上，改进为五架无人机地图融合。 改进部分主要在ServerSystem, Viewer, MapMatcher等类内进行了新节点实例化。 环境说明 Ubuntu 20或18 OpenCV 3.2  配置步骤：1. OpenCV安装安装依赖 123sudo apt install -y build-">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419190853764.png">
+<meta property="og:image" content="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419190955278.png">
+<meta property="og:image" content="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419191326739.png">
+<meta property="og:image" content="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419191529738.png">
+<meta property="article:published_time" content="2023-06-29T10:30:55.203Z">
+<meta property="article:modified_time" content="2023-06-29T10:35:09.301Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419190853764.png">
+  
+  
+  
+  <title>从零配置CCM-SLAM，支持五架无人机+RealSense相机 - myblog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":40,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>slashzyz</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/">
+                    
+                    PX4
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/docs/guide/">
+                    
+                    SLAM
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/docs/icon/">
+                    
+                    Code
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="从零配置CCM-SLAM，支持五架无人机+RealSense相机"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-29 18:30" pubdate>
+          2023年6月29日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          50 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">从零配置CCM-SLAM，支持五架无人机+RealSense相机</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="ccmslam-5uav"><a href="#ccmslam-5uav" class="headerlink" title="ccmslam_5uav"></a>ccmslam_5uav</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>本仓库在CCM-SLAM基础上，进行了改进。在原有最多使用四架无人机的基础上，改进为五架无人机地图融合。</p>
+<p>改进部分主要在ServerSystem, Viewer, MapMatcher等类内进行了新节点实例化。</p>
+<h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><ul>
+<li>Ubuntu 20或18</li>
+<li>OpenCV 3.2</li>
+</ul>
+<h2 id="配置步骤："><a href="#配置步骤：" class="headerlink" title="配置步骤："></a>配置步骤：</h2><h3 id="1-OpenCV安装"><a href="#1-OpenCV安装" class="headerlink" title="1. OpenCV安装"></a>1. OpenCV安装</h3><p>安装依赖</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">sudo apt <span class="hljs-keyword">install </span>-y <span class="hljs-keyword">build-essential </span>checkinstall cmake pkg-<span class="hljs-built_in">config</span> yasm git gfortran<br>sudo apt <span class="hljs-keyword">install </span>-y libgstreamer1.<span class="hljs-number">0</span>-dev libgstreamer-plugins-<span class="hljs-keyword">base1.0-dev</span><br><span class="hljs-keyword"></span>sudo apt <span class="hljs-keyword">install </span>-y libgstreamer1.<span class="hljs-number">0</span>-dev libgstreamer-plugins-<span class="hljs-keyword">base1.0-dev </span>libgtk2.<span class="hljs-number">0</span>-dev libtbb-dev libatlas-<span class="hljs-keyword">base-dev </span><br></code></pre></td></tr></table></figure>
+
+<p>下载<a href="https://gitee.com/link?target=https://github.com/opencv/opencv/archive/refs/tags/3.2.0.zip">OpenCV3.2</a></p>
+<p>解压后，完成部分文件修改参考<a href="https://gitee.com/link?target=https://blog.csdn.net/u014613745/article/details/78310916">https://blog.csdn.net/u014613745/article/details/78310916</a></p>
+<p>1）.找到FindCUDA.cmake文件</p>
+<p>找到行</p>
+<p>find_cuda_helper_libs(nppi)</p>
+<p>改为</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppial)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppicc)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppicom)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppidei)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppif)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppig)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppim)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppist)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppisu)</span></span><br><span class="hljs-function"><span class="hljs-title">find_cuda_helper_libs</span><span class="hljs-params">(nppitc)</span></span><br></code></pre></td></tr></table></figure>
+
+<p>2）.找到行</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">set</span>(CUDA_npp_LIBRARY <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;CUDA_nppc_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppi_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_npps_LIBRARY&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>改为</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">set</span>(CUDA_npp_LIBRARY <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;CUDA_nppc_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppial_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppicc_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppicom_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppidei_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppif_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppig_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppim_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppist_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppisu_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_nppitc_LIBRARY&#125;</span>;<span class="hljs-variable">$&#123;CUDA_npps_LIBRARY&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>3）.找到行</p>
+<p>unset(CUDA_nppi_LIBRARY CACHE)</p>
+<p>改为</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppial_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppicc_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppicom_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppidei_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppif_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppig_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppim_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppist_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppisu_LIBRARY CACHE)</span></span><br><span class="hljs-function"><span class="hljs-title">unset</span><span class="hljs-params">(CUDA_nppitc_LIBRARY CACHE)</span></span><br></code></pre></td></tr></table></figure>
+
+<p>4）.cuda9中有一个单独的halffloat(cuda_fp16.h)头文件,也应该被包括在opencv的目录里</p>
+<p>将头文件cuda_fp16.h添加至 opencv\modules\cudev\include\opencv2\cudev\common.hpp</p>
+<p>即在common.hpp中添加</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cuda_fp16.h&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>完成后即可开始编译</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs routeros">cd opencv 3.20<br>mkdir build<br>cd build<br>cmake <span class="hljs-attribute">-DCMAKE_BUILD_TYPE</span>=Release  <span class="hljs-attribute">-DCMAKE_INSTALL_PREFIX</span>=/usr/local \<br><span class="hljs-attribute">-DOPENCV_GENERATE_PKGCONFIG</span>=1  <span class="hljs-built_in">..</span><br>make -j4<br>sudo make install<br></code></pre></td></tr></table></figure>
+
+<p>此时可以通过</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lua">pkg-<span class="hljs-built_in">config</span> <span class="hljs-comment">--modversion opencv</span><br></code></pre></td></tr></table></figure>
+
+<p>查看到opencv此时的版本已经为3.2，且被装在&#x2F;usr&#x2F;local里</p>
+<h3 id="2-ROS安装与配置"><a href="#2-ROS安装与配置" class="headerlink" title="2. ROS安装与配置"></a>2. ROS安装与配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo sh -c <span class="hljs-string">&#x27;. /etc/lsb-release &amp;&amp; echo &quot;deb http://mirrors.ustc.edu.cn/ros/ubuntu/ `lsb_release -cs` main&quot; &gt; /etc/apt/sources.list.d/ros-latest.list&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install curl <br>curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install ros-noetic-desktop  <span class="hljs-comment"># 若为ubuntu18则为melodic</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;source /opt/ros/noetic/setup.bash&quot;</span> &gt;&gt; ~/.bashrc<br><span class="hljs-built_in">source</span> ~/.bashrc<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential<br></code></pre></td></tr></table></figure>
+
+<p><a href="https://gitee.com/link?target=https://mp.weixin.qq.com/s?__biz=MzkzMzI2MTU2Nw==&mid=2247484207&idx=1&sn=e2762a8a9bf9c1a44fea4d365bfc9c2f&chksm=c24e7abff539f3a9d557d46188a6af3e2f385850c0df1721a9f8cb2ac90873e1f7353b9a1282&mpshare=1&scene=1&srcid=1022y7kDVt7kCLa4n1ZXWAZC&sharer_sharetime=1634858167048&sharer_shareid=3e3650f7959dd3017b423b28ebe07cb1&exportkey=A87wEj0Ymq+Hy48ilhHpvCE=&pass_ticket=b+YFCkXlTwiOLyaMziPP63zfarN4dUtbLfxGTLLossTKGDY4HFUk2SKWs4QHZdO0&wx_header=0%23rd">rosdepc链接</a></p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs vim">sudo apt-<span class="hljs-built_in">get</span> install <span class="hljs-keyword">python3</span>-pip <br>sudo pip3 install rosdepc<br>sudo rosdepc init<br>rosdepc <span class="hljs-keyword">update</span><br></code></pre></td></tr></table></figure>
+
+<p>测试</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">roscore</span><br><span class="hljs-attribute">rosrun turtlesim turtlesim_node</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>若是出现问题IOError:[Errno 13]permission denied: &#x2F;home&#x2F;neousys&#x2F;.ros&#x2F;roscore-11311.pid”</p>
+<p>fix: 给文件名加权限即可</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arcade">sudo chmod <span class="hljs-number">777</span> -R ~<span class="hljs-regexp">/.ros/</span><br></code></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="3-Realsense-ros"><a href="#3-Realsense-ros" class="headerlink" title="3. Realsense-ros"></a>3. Realsense-ros</h3><p><strong>此处已默认nx安装librealsense 2.51</strong></p>
+<p>安装ros包</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk">cd ~<span class="hljs-regexp">/catkin_ws/</span>src<br>git clone https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/IntelRealSense/</span>realsense-ros.git  <span class="hljs-comment"># 把2.3.2版本复制进来</span><br>git clone https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/pal-robotics/</span>ddynamic_reconfigure.git<br>cd ~/catkin_ws &amp;&amp; catkin_make<br></code></pre></td></tr></table></figure>
+
+<p>测试</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs applescript">roslaunch realsense2_camera rs_camera.<span class="hljs-built_in">launch</span> <br>rqt_image_raw<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-cluster-slam配置"><a href="#4-cluster-slam配置" class="headerlink" title="4. cluster-slam配置"></a>4. cluster-slam配置</h3><p>按照下面配置编译代码</p>
+<ul>
+<li><pre><code class="bash">sudo apt-get install python-catkin-tools		
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs gradle"><br>- ```bash<br>  mkdir -p ~<span class="hljs-regexp">/cluster-slam_ws/</span>src<br>  cd ~/cluster-slam_ws<br>  <span class="hljs-keyword">source</span> <span class="hljs-regexp">/opt/</span>ros<span class="hljs-regexp">/noetic/</span>setup.bash<br>  catkin init<br>  catkin config --extend <span class="hljs-regexp">/opt/</span>ros/noetic<br></code></pre></td></tr></table></figure>
+</code></pre>
+</li>
+<li><pre><code class="bash"># 代码复制
+cd cd ~/cluster-slam_ws/src
+git clone https://gitee.com/slashzyz/cluster-slam.git
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs awk"><br>- ```bash<br>  <span class="hljs-comment"># 编译DBoW2库</span><br>  cd ~<span class="hljs-regexp">/cluster-slam_ws/</span>src<span class="hljs-regexp">/cluster-slam/</span>cslam<span class="hljs-regexp">/thirdparty/</span>DBoW2/<br>  mkdir build<br>  cd build<br>  cmake ..<br>  make -j8<br></code></pre></td></tr></table></figure>
+</code></pre>
+</li>
+<li><pre><code class="bash"># 编译g2o库
+cd ~/cluster-slam_ws/src/cluster-slam/cslam/thirdparty/g2o
+mkdir build
+cd build
+cmake --cmake-args -DG2O_U14=0 ..
+make -j8
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk"><br>- ```bash<br>  <span class="hljs-comment"># 解压词典</span><br>  cd ~<span class="hljs-regexp">/cluster-slam_ws/</span>src<span class="hljs-regexp">/cluster-slam/</span>cslam/conf<br>  unzip ORBvoc.txt.zip<br></code></pre></td></tr></table></figure>
+</code></pre>
+</li>
+<li><pre><code class="bash"># 编译程序代码
+cd ~/cluster-slam_ws/
+catkin build ccmslam --cmake-args -DG2O_U14=0 -DCMAKE_BUILD_TYPE=Release
+source ~/cluster-slam_ws/devel/setup.bash
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><br><br><br><span class="hljs-comment">### 5. 相机配置文件与运行</span><br><br><span class="hljs-comment">#### D435i 相机launch文件配置</span><br><br>打开realsense-ros包下的rs_camera.launch，将其中分辨率<br><br>```xml<br>  &lt;arg <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;color_width&quot;</span>         <span class="hljs-attribute">default</span>=<span class="hljs-string">&quot;-1&quot;</span>/&gt;<br>  &lt;arg <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;color_height&quot;</span>        <span class="hljs-attribute">default</span>=<span class="hljs-string">&quot;-1&quot;</span>/&gt;<br></code></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+<p>改为：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;color_width&quot;</span>         <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;424&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;color_height&quot;</span>        <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;240&quot;</span>/&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>将图像频率</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;arg name=<span class="hljs-string">&quot;color_fps&quot;</span>           default=<span class="hljs-string">&quot;-1&quot;</span>/&gt;<br></code></pre></td></tr></table></figure>
+
+<p>改为</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;arg name=<span class="hljs-string">&quot;color_fps&quot;</span>           default=<span class="hljs-string">&quot;15&quot;</span>/&gt;<br></code></pre></td></tr></table></figure>
+
+<p>为了多机slam融合</p>
+<p>需要对无人机x的相机进行编号，即将其中的</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;camera&quot;</span>              <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;camera&quot;</span>/&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>改为</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;camera&quot;</span>              <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;camerax&quot;</span>/&gt;</span>    <br></code></pre></td></tr></table></figure>
+
+<p>此处的x表示第几架无人机</p>
+<p>最终为：</p>
+<p><img src="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419190853764.png" srcset="/img/loading.gif" lazyload alt="image-20230419190853764"></p>
+<p><strong>conf文件配置</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/cluster-slam_ws/src/cslam/conf<br>gedit vi_d455.yaml<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419190955278.png" srcset="/img/loading.gif" lazyload alt="image-20230419190955278"></p>
+<p>对其中的内参、畸变参数进行修改</p>
+<p>只修改该部分</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml">Camera.fx: 208.875259<br>Camera.fy: 208.628463<br>Camera.cx: 214.399047<br>Camera.cy: 123.552673<br><br>Camera.k1: -0.056723371148109436<br>Camera.k2: 0.07017022371292114<br>Camera.p1: -0.000241746864048764<br>Camera.p2: 0.000677465635817498<br>Camera.k3: -0.0224686115980148<br></code></pre></td></tr></table></figure>
+
+<p>查询相机参数</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">roslaunch realsense2_camera rs_camera.launch<br>rostopic <span class="hljs-built_in">echo</span> /camera/color/camera_info<br></code></pre></td></tr></table></figure>
+
+<p>将其中的K的四个、D的五个的参数，覆盖上述参数</p>
+<h4 id="多无人机网络配置"><a href="#多无人机网络配置" class="headerlink" title="多无人机网络配置"></a>多无人机网络配置</h4><p>所有无人机端均需要完整配置一遍以上步骤，最终在pc端运行Server.launch，各个无人机nx上运行Clientx_d435.launch</p>
+<p><strong>！！！保证所有设备在同一网路下，无人机NX上打开终端</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">gedit ~/.bashrc<br></code></pre></td></tr></table></figure>
+
+<p>插入(第一行为pc端的ip，通过ifconfig指令查询；第二行为nx端ip，每架无人机不同，查询自己的并输入)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">export</span> ROS_MASTER_URI=http://192.168.xxx.xxx:11311<br><span class="hljs-built_in">export</span> ROS_IP=192.168.xxx.xxx<br></code></pre></td></tr></table></figure>
+
+<p><strong>！！！注意每台NX均需要完成该步骤</strong></p>
+<h4 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h4><p><strong>相机运行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">roslaunch realsense2_camera rs_camera.launch<br></code></pre></td></tr></table></figure>
+
+<p><strong>服务器端运行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">roslaunch ccmslam Server.launch<br>roscd ccmslam<br>rviz -d conf/rviz/ccmslam.rviz<br></code></pre></td></tr></table></figure>
+
+<p>将rviz中右侧标签栏中MarkerC0、MapPointsC0、MarkerC1、MapPointsC1、MarkerC2、MapPointsC2、MarkerC3、MapPointsC3旁均点亮对钩</p>
+<p><img src="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419191326739.png" srcset="/img/loading.gif" lazyload alt="image-20230419191326739"></p>
+<p><strong>无人机端运行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">roslaunch ccmslam Client0_d435.launch<br></code></pre></td></tr></table></figure>
+
+<p>此时，对无人机进行<strong>初始化</strong>，即举着无人机进行<strong>轻微的</strong>旋转和平移，知道该终端出现</p>
+<p><img src="https://gitee.com/slashzyz/cluster-slam/raw/master/image/image-20230419191529738.png" srcset="/img/loading.gif" lazyload alt="image-20230419191529738"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">Clientsystem initialized (Client ID: 0)<br>[ INFO] [1681803951.793837487]: Started CSLAM client node...<br>New Map created with 100 points<br></code></pre></td></tr></table></figure>
+
+<p>表示此时已经初始化完成，并生成了地图点</p>
+<h4 id="多机运行"><a href="#多机运行" class="headerlink" title="多机运行"></a>多机运行</h4><p>多无人机即需要在各自运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">roslaunch realsense2_camera rs_camera.launch<br>roslaunch ccmslam Clientx_d435.launch<br></code></pre></td></tr></table></figure>
+
+<p>当前已经支持五架无人机运行，即x可以从0-4运行四个</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>从零配置CCM-SLAM，支持五架无人机+RealSense相机</div>
+      <div>http://example.com/2023/06/29/ccm-5uav/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月29日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/29/nx-vins/" title="Jetson NX从零配置VINS+RealSense">
+                        <span class="hidden-mobile">Jetson NX从零配置VINS+RealSense</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

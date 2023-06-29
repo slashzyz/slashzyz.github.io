@@ -251,13 +251,46 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2023/06/29/px4/" target="_self">
-          NX完整配置VINS
+        <a href="/2023/06/29/ccm-5uav/" target="_self">
+          从零配置CCM-SLAM，支持五架无人机+RealSense相机
         </a>
       </h1>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/29/px4/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/29/ccm-5uav/" target="_self">
+        <div>
+          ccmslam_5uav介绍本仓库在CCM-SLAM基础上，进行了改进。在原有最多使用四架无人机的基础上，改进为五架无人机地图融合。 改进部分主要在ServerSystem, Viewer, MapMatcher等类内进行了新节点实例化。 环境说明 Ubuntu 20或18 OpenCV 3.2  配置步骤：1. OpenCV安装安装依赖 123sudo apt install -y build-
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-29 18:30" pubdate>
+              2023-06-29
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/06/29/nx-vins/" target="_self">
+          Jetson NX从零配置VINS+RealSense
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/29/nx-vins/" target="_self">
         <div>
           NX配置终极版前言板载计算机使用Jetson Xiaxver NX，本文档作为配置使用 1. 烧录镜像 直接选择我做好的得了 烧录Ubuntu 18.04.5，nvida官网  2. 换源更换成中科大的!清华的有问题。 1sudo vim &#x2F;etc&#x2F;apt&#x2F;sources.list  123456789#中科大源deb http:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;ubuntu-ports
         </div>
