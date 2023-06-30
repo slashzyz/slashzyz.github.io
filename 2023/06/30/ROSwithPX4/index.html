@@ -20,7 +20,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="ROS无人机自主飞行与PX4硬件配置常见问题">
 <meta property="og:url" content="http://example.com/2023/06/30/ROSwithPX4/index.html">
-<meta property="og:site_name" content="myblog">
+<meta property="og:site_name" content="slashzyz&#39; blog">
 <meta property="og:description" content="ROS无人机自主飞行与PX4配置问题文中引用均为参考，部分内容转载！特感谢提供了参考！ PX4的配置 首先需要对PX4烧写固件，版本问题上其实没有很多区别，目前我所用的最新版本——1.12.3版本的px4_fmu_v3_default，下载这个后在固件处烧写 完成基本飞控配置参考阿木实验室第五条基本配置 固件刷写 机架选择 传感器校准 遥控器校准 飞形模式调整 电池校准 电调校准（参考后面，这里的">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://wiki.amovlab.com/public/prometheuswiki/images/7-esc-calibration.png">
@@ -29,14 +29,14 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201110192119958.png#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201110192151783.png#pic_center">
 <meta property="article:published_time" content="2023-06-30T03:04:54.099Z">
-<meta property="article:modified_time" content="2023-06-30T03:08:16.982Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:modified_time" content="2023-06-30T03:09:33.433Z">
+<meta property="article:author" content="slashzyz">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://wiki.amovlab.com/public/prometheuswiki/images/7-esc-calibration.png">
   
   
   
-  <title>ROS无人机自主飞行与PX4硬件配置常见问题 - myblog</title>
+  <title>ROS无人机自主飞行与PX4硬件配置常见问题 - slashzyz&#39; blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -325,7 +325,7 @@
 <h4 id="问题现象："><a href="#问题现象：" class="headerlink" title="问题现象："></a>问题现象：</h4><p>主要是解锁后，<strong>会出现一个甚至多个电机不转，但是给大油门后会转</strong>，然后用QGC的motor测试，发现给相同的油门响应，“坏的电机”会不反应，只有给很大才会转。</p>
 <h4 id="尝试与发现："><a href="#尝试与发现：" class="headerlink" title="尝试与发现："></a>尝试与发现：</h4><p>其实就是需要电调校准，校准方法非常讲究。。。</p>
 <p>因为我们实验室用的是阿木实验室Z410飞机，原先似乎是APM固件，而我们一般都会用PX4固件。这里就牵扯到他电机校准上的不同了。我发现用QGC里面这个方法不太管用，没有效果。</p>
-<p><img src="https://wiki.amovlab.com/public/prometheuswiki/images/7-esc-calibration.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://wiki.amovlab.com/public/prometheuswiki/images/7-esc-calibration.png" srcset="/img/loading.gif" lazyload alt="https://img-blog.csdnimg.cn/20210520183053970.png"></p>
 <p>于是我查了很多方法，比如用MissionPlanner中刷APM固件再电调校准，理论上是可以，就连售后也这么说的。。。</p>
 <p>但是奈何不太会用MP，于是找了很多不需要地面站的校准方法，主要就是插拔上电，给遥控器油门的上下阈值。</p>
 <h4 id="具体校准方法："><a href="#具体校准方法：" class="headerlink" title="具体校准方法："></a>具体校准方法：</h4><ul>
