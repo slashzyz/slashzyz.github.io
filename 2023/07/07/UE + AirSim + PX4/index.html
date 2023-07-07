@@ -1,0 +1,712 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="slashzyz">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="UE + AirSim + PX4 仿真UE和AirSim都使用的UE 4.25的版本，可以直接复制过来编译，Airsim可能需要Clean一下再编译。 UE4安装UE4是虚拟引擎，运行airsim的平台。 理论上先注册，github加入团队，下载UE4，安装编译。 参考Ubuntu系统安装Airsim仿真器，Ubuntu18.04 安装AirSim仿真插件以及载入地图（Airsim-v1.3.1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UE + AirSim + PX4 仿真配置">
+<meta property="og:url" content="http://example.com/2023/07/07/UE%20+%20AirSim%20+%20PX4/index.html">
+<meta property="og:site_name" content="slashzyz&#39; blog">
+<meta property="og:description" content="UE + AirSim + PX4 仿真UE和AirSim都使用的UE 4.25的版本，可以直接复制过来编译，Airsim可能需要Clean一下再编译。 UE4安装UE4是虚拟引擎，运行airsim的平台。 理论上先注册，github加入团队，下载UE4，安装编译。 参考Ubuntu系统安装Airsim仿真器，Ubuntu18.04 安装AirSim仿真插件以及载入地图（Airsim-v1.3.1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/slashzyz/learning_slam/raw/master/image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01hbmdvSEhISA==,size_16,color_FFFFFF,t_70%23pic_center.png">
+<meta property="article:published_time" content="2023-07-07T08:33:22.894Z">
+<meta property="article:modified_time" content="2023-07-07T08:35:53.296Z">
+<meta property="article:author" content="slashzyz">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gitee.com/slashzyz/learning_slam/raw/master/image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01hbmdvSEhISA==,size_16,color_FFFFFF,t_70%23pic_center.png">
+  
+  
+  
+  <title>UE + AirSim + PX4 仿真配置 - slashzyz&#39; blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":40,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>slashzyz</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/PX4/">
+                    
+                    PX4
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/SLAM/">
+                    
+                    SLAM
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/">
+                    
+                    Code
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Paper-Translation/">
+                    
+                    Paper Translation
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="UE + AirSim + PX4 仿真配置"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-07 16:33" pubdate>
+          2023年7月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">UE + AirSim + PX4 仿真配置</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="UE-AirSim-PX4-仿真"><a href="#UE-AirSim-PX4-仿真" class="headerlink" title="UE + AirSim + PX4 仿真"></a>UE + AirSim + PX4 仿真</h1><p>UE和AirSim都使用的UE 4.25的版本，可以直接复制过来编译，Airsim可能需要Clean一下再编译。</p>
+<h2 id="UE4安装"><a href="#UE4安装" class="headerlink" title="UE4安装"></a>UE4安装</h2><p>UE4是虚拟引擎，运行airsim的平台。</p>
+<p>理论上先注册，github加入团队，下载UE4，安装编译。</p>
+<p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/sanyuecaozhang/article/details/123210485">Ubuntu系统安装Airsim仿真器</a>，<a target="_blank" rel="noopener" href="https://blog.csdn.net/syy014799/article/details/121871567">Ubuntu18.04 安装AirSim仿真插件以及载入地图（Airsim-v1.3.1+UE4.25）</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> UnrealEngine<br>./Setup.sh<br>./GenerateProjectFiles.sh<br>make<br></code></pre></td></tr></table></figure>
+
+<p>编译下来100G，一定找到足够空间。实验室用的UE4版本为4.25.4，新版测试了发现总有问题，所以建议大家继续沿用已经编译好的。</p>
+<h2 id="AirSim构建"><a href="#AirSim构建" class="headerlink" title="AirSim构建"></a>AirSim构建</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">git <span class="hljs-built_in">clone</span> https://github.com/Microsoft/AirSim.git<br><span class="hljs-built_in">cd</span> AirSim<br><br>./setup.sh<br>./build.sh<br><span class="hljs-comment"># use ./build.sh --debug to build in debug mode</span><br></code></pre></td></tr></table></figure>
+
+<p>理论上使用新版本，但根据实验室UE的版本，airsim大概是1.4或1.5类的。</p>
+<h2 id="使用AirSim"><a href="#使用AirSim" class="headerlink" title="使用AirSim"></a>使用AirSim</h2><p>在UE目录下，打开UE，第一次会比较慢。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">./Engine/Binaries/Linux/UE4Editor<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/slashzyz/learning_slam/raw/master/image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01hbmdvSEhISA==,size_16,color_FFFFFF,t_70%23pic_center.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p>打开后，在“<strong>更多</strong>“中找到<code>AirSim/Unreal/Environments/Blocks</code>，“Environments“目录下的每一个包都表示一个虚拟环境。</p>
+<p>点击<code>Blocks.uproject</code>，选中会提示上图，这里我们需要点击“<strong>更多选项</strong>”，再点“<strong>跳过转换</strong>”。此时会关闭UE，终端会断开，并重新打开UE加载环境。</p>
+<p>如果提示了“<strong>是否构建项目</strong>”，选择“<strong>是</strong>“表示选择使用汽车，选择“<strong>否</strong>“表示选择四旋翼无人机。</p>
+<h3 id="运行ros和python脚本"><a href="#运行ros和python脚本" class="headerlink" title="运行ros和python脚本"></a>运行ros和python脚本</h3><p>打开后，ros包需要构建，进入<code>./AirSim/ros/</code>目录下编译</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">catkin_make<br></code></pre></td></tr></table></figure>
+
+<p>添加ros环境</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;source <span class="hljs-variable">$&#123;your path&#125;</span>/AirSim/ros/devel/setup.bash&quot;</span> &gt;&gt; ~/.bashrc<br></code></pre></td></tr></table></figure>
+
+<p>此时可以运行ROS节点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">roslaunch airsim_ros_pkgs airsim_node.launch<br></code></pre></td></tr></table></figure>
+
+<p>如果没有报错的话可以查看<code>rostopic list</code>此时的话题，有相关imu、GPS等信息。</p>
+<p>此外，可以运行基本的python程序控制飞机</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> ./AirSim/PythonClient/multirotor<br>python hello_drone.py<br><span class="hljs-comment"># 不行就python3 hello_drone.py</span><br></code></pre></td></tr></table></figure>
+
+<p>如果运行成功会提示按键执行起飞等任务。此外可以自己编写运行控制代码。</p>
+<h3 id="更改-json配置文件"><a href="#更改-json配置文件" class="headerlink" title="更改.json配置文件"></a>更改.json配置文件</h3><p>在用户的根目录下，有一个<code>./Documents/AirSim/</code>下有一个<code>settings.json</code>文件，其中可以更改配置。</p>
+<p>如需要添加相机等模块，可以添加</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs json">  <span class="hljs-attr">&quot;Vehicles&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>       <span class="hljs-attr">&quot;VehicleType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;SimpleFlight&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;DefaultVehicleState&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Armed&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;EnableCollisionPassthrogh&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;EnableCollisions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;AllowAPIAlways&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;Cameras&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;front_center_custom&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;CaptureSettings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;PublishToRos&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;ImageType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;Width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">640</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;Height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">480</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;FOV_Degrees&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">27</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;DepthOfFieldFstop&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2.8</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;DepthOfFieldFocalDistance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">200.0</span><span class="hljs-punctuation">,</span> <br>              <span class="hljs-attr">&quot;DepthOfFieldFocalRegion&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">200.0</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;TargetGamma&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.5</span><br>            <span class="hljs-punctuation">&#125;</span><br>          <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;X&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.50</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;Y&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;Z&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.10</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;Pitch&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;Roll&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;Yaw&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><br>        <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>每次更新了<code>.json</code>文件后都需要重新运行<code>UE4Editor</code>，重新加载。</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><h4 id="1-版本不对或插件无法构建"><a href="#1-版本不对或插件无法构建" class="headerlink" title="1. 版本不对或插件无法构建"></a>1. 版本不对或插件无法构建</h4><p>会出现类似无法build插件，如AirSim和Blocks无法构建。或者出现了版本update之类的。查看了有人提出的issue，解决方法为：<a target="_blank" rel="noopener" href="https://github.com/microsoft/AirSim/issues/4535">无法使用 UE4.27 打开 Blocks.uproject</a></p>
+<ol>
+<li>清理 UBlocks 项目 <code>cd ./AirSim/Unreal/Environments/Blocks &amp;&amp; ./clean.sh</code></li>
+<li>安装 <a target="_blank" rel="noopener" href="https://www.mono-project.com/download/stable/#download-lin">mono-complete for Ubuntu 18.04</a>，可让您在 Linux 上运行 .exe 文件 </li>
+<li>做了一些链接： <code>sudo ln -s /usr/bin/mono /bin/mono &amp;&amp; sudo ln -s /usr/lib/mono /lib/mono</code></li>
+<li><strong>运行以下命令来重建 Blocks 项目</strong>： <code>./UnrealEngine/Engine/Binaries/ThirdParty/Mono/Linux/bin/mono ./UnrealEngine/Engine/Binaries/DotNET/UnrealBuildTool.exe Development  Linux  -Project=/home/slash/AirSim/Unreal/Environments/Blocks/Blocks.uproject  -TargetType=Editor -Progress</code></li>
+<li>从命令行启动 UE4Editor： <code>~/UnrealEngine/Engine/Binaries/Linux/UE4Editor</code></li>
+<li>点击更多 &gt; 浏览 &gt; <code>/home/andrew/AirSim/Unreal/Environments/Blocks/Blocks.uproject</code></li>
+<li>出现错误“<strong>这个项目是用不同版本的虚幻引擎制作的</strong>”。  点击“<strong>更多选项</strong>”&gt;“<strong>跳过转换</strong>” </li>
+<li>此时便可以开启项目，不幸的是，您总是必须单击“跳过转换”才能打开它。  如果有人知道更好的方法，请随时分享。  谢谢！</li>
+</ol>
+<ul>
+<li>其中最重要的是第四步，对于其他环境如“LandscapeMountains“同样可以用该方法。</li>
+</ul>
+<h4 id="2-python文件运行错误"><a href="#2-python文件运行错误" class="headerlink" title="2. python文件运行错误"></a>2. python文件运行错误</h4><p><a target="_blank" rel="noopener" href="https://github.com/microsoft/AirSim-NeurIPS2019-Drone-Racing/issues/40">https://github.com/microsoft/AirSim-NeurIPS2019-Drone-Racing/issues/40</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/microsoft/AirSim/issues/1225">https://github.com/microsoft/AirSim/issues/1225</a></p>
+<p>主要体现在报错：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">msgpackrpc.error.RPCError: rpclib: <span class="hljs-keyword">function</span> <span class="hljs-string">&#x27;enableApiControl&#x27;</span> (called with 2 arg(s)) threw an exception. The exception contained this information: Vehicle API <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;&#x27;</span> is not available. This could either because this is simulation-only API or this vehicle does not exist.<br></code></pre></td></tr></table></figure>
+
+<p>这个主要是<code>.json</code>文件写的有问题导致的，应该再查看是否有些地方不符合规范。</p>
+<h2 id="PX4与mavros使用"><a href="#PX4与mavros使用" class="headerlink" title="PX4与mavros使用"></a>PX4与mavros使用</h2><p>ref1:<a target="_blank" rel="noopener" href="https://gitee.com/pi-lab/research_uav_cv_simulation/tree/master/doc/airsim">AirSim仿真环境搭建</a></p>
+<p>ref2:<a target="_blank" rel="noopener" href="https://gitee.com/pi-lab/research_uav_cv_simulation/blob/master/unreal_uav_env_sim/UE_sim_linux.md">linux具体配置</a></p>
+<p>首先在我们配置好了PX4的基础上，进行以下三步，</p>
+<ol>
+<li><p>在配置好的PX4文件夹里面打开终端输入命令 <code>make px4_sitl_default none_iris</code></p>
+</li>
+<li><p>打开新的终端输入命令<code> roslaunch mavros px4.launch fcu_url:=&quot;udp://:14550@127.0.0.1:4560&quot;</code></p>
+</li>
+<li><p>打开在Airsim&#x2F;ros文件夹打开新的终端输入命令   </p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">source</span> devel/setup.bash<br>roslaunch airsim_ros_pkgs airsim_node.launch<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>第二步里面的端口可能不一样，如果命令不能使用，根据UE4打印的端口信息进行修改</p>
+<p>最后第一步的终端中输入命令commander takeoff 如果无人机起飞则Airism与PX4与ROS连接成功可以通过rostopic查看Airsim有哪些话题输出。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PX4/" class="category-chain-item">PX4</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>UE + AirSim + PX4 仿真配置</div>
+      <div>http://example.com/2023/07/07/UE + AirSim + PX4/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>slashzyz</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/07/%E5%A4%9A%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%8D%8F%E5%90%8C%E5%8D%95%E7%9B%AESLAM/" title="翻译-多无人机协同单目SLAM">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">翻译-多无人机协同单目SLAM</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/30/ROSwithPX4/" title="ROS无人机自主飞行与PX4硬件配置常见问题">
+                        <span class="hidden-mobile">ROS无人机自主飞行与PX4硬件配置常见问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
